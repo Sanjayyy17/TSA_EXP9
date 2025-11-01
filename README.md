@@ -1,5 +1,4 @@
 # EX.NO.09        A project on Time series analysis on weather forecasting using ARIMA model 
-### Date: 
 
 ### AIM:
 To Create a project on Time series analysis on weather forecasting using ARIMA model in  Python and compare with other models.
@@ -15,8 +14,55 @@ To Create a project on Time series analysis on weather forecasting using ARIMA m
 6. Auto-fit the ARIMA model
 7. Evaluate model predictions
 ### PROGRAM:
+~~~
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.arima.model import ARIMA
+from sklearn.metrics import mean_squared_error
 
+# Load the data
+data = pd.read_csv("gold_price_data.csv")
+
+# Convert 'Date' column to datetime and set it as index
+data['Date'] = pd.to_datetime(data['Date'])
+data.set_index('Date', inplace=True)
+
+# Define the ARIMA model function
+def arima_model(data, target_variable, order):
+    # Split data into training and testing sets
+    train_size = int(len(data) * 0.8)
+    train_data, test_data = data[:train_size], data[train_size:]
+
+    # Fit the ARIMA model
+    model = ARIMA(train_data[target_variable], order=order)
+    fitted_model = model.fit()
+
+    # Make predictions
+    forecast = fitted_model.forecast(steps=len(test_data))
+
+    # Calculate RMSE
+    rmse = np.sqrt(mean_squared_error(test_data[target_variable], forecast))
+
+    # Plot the results
+    plt.figure(figsize=(10, 6))
+    plt.plot(train_data.index, train_data[target_variable], label='Training Data')
+    plt.plot(test_data.index, test_data[target_variable], label='Testing Data')
+    plt.plot(test_data.index, forecast, label='Forecasted Data')
+    plt.xlabel('Date')
+    plt.ylabel(target_variable)
+    plt.title('ARIMA Forecasting for ' + target_variable)
+    plt.legend()
+    plt.show()
+
+    print("Root Mean Squared Error (RMSE):", rmse)
+
+# Run the ARIMA model on the 'Value' column
+arima_model(data, 'Value', order=(5,1,0))
+~~~
 ### OUTPUT:
+<img width="859" height="547" alt="image" src="https://github.com/user-attachments/assets/2baefa0a-c987-4466-adf8-6e11233f277d" />
+
 
 
 ### RESULT:
